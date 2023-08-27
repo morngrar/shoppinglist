@@ -37,7 +37,7 @@ func NewDatabaseHandle() (DatabaseHandle, error) {
 	}
 
 	uri := fmt.Sprintf(
-		"mongodb://%s:%s@%s",
+		"mongodb+srv://%s:%s@%s",
 		user,
 		password,
 		url,
