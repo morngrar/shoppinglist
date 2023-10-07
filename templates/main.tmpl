@@ -1,3 +1,4 @@
+{{define "main"}}
 <!DOCTYPE html>
 
 <html lang="en">
@@ -41,32 +42,13 @@
                     {{ range .Items }}
                         
                         {{ block "item-list-element" . }}
-                        <li class="list-group-item d-flex justify-content-between align-items-center" id="item-{{- .Id}}">
-                                {{ .Name }}
-
-                                <form 
-                                    hx-delete="/{{ .SLID }}/complete-item/{{ .Id }}"
-                                    hx-target="#item-{{- .Id}}"
-                                    hx-swap="delete"
-                                    id="complete-item-form"
-                                >
-                                <span 
-                                    class="spinner-border spinner-border-sm htmx-indicator" 
-                                    id="complete-spinner" 
-                                    role="status" 
-                                    aria-hidden="true">
-                                </span>
-                                    <button 
-                                        type="submit" 
-                                        class="btn btn-secondary" 
-                                        id="complete-button"
-                                    >
-                                        Done
-                                    </button>
-                                </form>
-                            </li>
-
+                            {{if .Completed }}
+                                {{template "completed-item" . }}
+                            {{else}}
+                                {{template "vanilla-item" . }}
+                            {{end}}
                         {{ end }}
+
                     {{ end }}
                 </ul>
             {{ end }}
@@ -137,3 +119,4 @@
 
 </body>
 </html>
+{{end}}
