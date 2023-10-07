@@ -17,10 +17,10 @@ func shoppingListGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	shoppingListId := chi.URLParam(r, shoppingListIdString)
 
-	tmpl, err := template.ParseFiles("templates/shopping-list.html")
+	tmpl, err := template.ParseGlob("templates/*")
 	if err != nil {
-		log.Printf("Failed to parse shopping-list.html: %s", err)
-		http.Error(w, "Failed to parse template", http.StatusInternalServerError)
+		log.Printf("Failed to parse templates: %s", err)
+		http.Error(w, "Failed to parse templates", http.StatusInternalServerError)
 		return
 	}
 
@@ -39,7 +39,7 @@ func shoppingListGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, sl.TemplateMapping())
+	err = tmpl.ExecuteTemplate(w, "main", sl.TemplateMapping())
 	if err != nil {
 		log.Printf("Failed to execute template: %s", err)
 		http.Error(w, "Failed to execute template", http.StatusInternalServerError)
@@ -50,7 +50,7 @@ func shoppingListGetHandler(w http.ResponseWriter, r *http.Request) {
 func shoppingListAddHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.PostFormValue("name")
 	log.Printf("name: %s", name)
-	tmpl, err := template.ParseFiles("templates/shopping-list.html")
+	tmpl, err := template.ParseGlob("templates/*")
 	if err != nil {
 		log.Printf("Failed to parse shopping-list.html: %s", err)
 		http.Error(w, "Failed to parse template", http.StatusInternalServerError)
@@ -86,7 +86,7 @@ func shoppingListAddHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("HX-Trigger", "refresh-form")
 
-	err = tmpl.ExecuteTemplate(w, "item-list-element", model.NewItemMapping(sl, newItem))
+	err = tmpl.ExecuteTemplate(w, "vanilla-item", model.NewItemMapping(sl, newItem))
 	if err != nil {
 		log.Printf("Failed to execute template: %s", err)
 		http.Error(w, "Failed to execute template", http.StatusInternalServerError)
@@ -94,12 +94,7 @@ func shoppingListAddHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func itemCompleteHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
-		log.Printf("Did NOT get DELETE on `complete-item` endpoint: %v", r.Method)
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
+func itemDoneHandler(w http.ResponseWriter, r *http.Request) {
 
 	idParam := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
@@ -110,6 +105,65 @@ func itemCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("completing id: %d", id)
+
+	shoppingListId := chi.URLParam(r, shoppingListIdString)
+
+	db, err := database.NewDatabaseHandle()
+	if err != nil {
+		log.Printf("Failed to connect to database: %s", err)
+		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer db.Disconnect()
+
+	_, err = db.GetShoppingListByID(shoppingListId)
+	if err != nil {
+		log.Printf("Failed to get shopping list from db: %s", err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	err = db.CompleteItemFromShoppingList(shoppingListId, uint32(id))
+	if err != nil {
+		log.Printf("Failed complete item in db: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	item, err := db.GetItemByID(shoppingListId, uint32(id))
+	if err != nil {
+		log.Printf("Failed retrieve item in db: %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	tmpl, err := template.ParseGlob("templates/*")
+	if err != nil {
+		log.Printf("Failed to parse templates: %s", err)
+		http.Error(w, "Failed to parse templates", http.StatusInternalServerError)
+		return
+	}
+
+	mapping := item.TemplateMapping(shoppingListId)
+	err = tmpl.ExecuteTemplate(w, "completed-item", mapping)
+	if err != nil {
+		log.Printf("Failed to execute template: %s", err)
+		http.Error(w, "Failed to execute template", http.StatusInternalServerError)
+		return
+	}
+}
+
+func itemDeleteHandler(w http.ResponseWriter, r *http.Request) {
+
+	idParam := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		log.Printf("Received invalid id on `complete-item` endpoint: %s", err)
+		http.Error(w, "Invalid id", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("deleteing id: %d", id)
 
 	shoppingListId := chi.URLParam(r, shoppingListIdString)
 

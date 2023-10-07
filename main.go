@@ -49,7 +49,8 @@ func main() {
 	r.Get("/", indexHandler)
 	r.Get("/{shoppingListId}", shoppingListGetHandler)
 	r.Post("/{shoppingListId}/add-item/", shoppingListAddHandler)
-	r.Delete("/{shoppingListId}/complete-item/{id}", itemCompleteHandler)
+	r.Get("/{shoppingListId}/complete-item/{id}", itemDoneHandler)
+	r.Delete("/{shoppingListId}/complete-item/{id}", itemDeleteHandler)
 
 	port := "8080"
 	fmt.Println("Running on port: ", port)

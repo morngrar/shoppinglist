@@ -32,12 +32,18 @@ func NewDatabaseHandle() (DatabaseHandle, error) {
 	password := os.Getenv("DB_PASSWORD")
 	url := os.Getenv("DB_HOST")
 
+	protocol := "mongodb+srv"
+	if url == "localhost" { // in case of testing locally, mongodb+srv wont work
+		protocol = "mongodb"
+	}
+
 	if user == "" || password == "" || url == "" {
 		return dbh, errors.New("environment not set up correctly")
 	}
 
 	uri := fmt.Sprintf(
-		"mongodb+srv://%s:%s@%s",
+		"%s://%s:%s@%s",
+		protocol,
 		user,
 		password,
 		url,
@@ -113,11 +119,8 @@ func (db DatabaseHandle) DeleteShoppingListByUuid(uuid string) error {
 		Collection(shoppinglistCollectionString)
 
 	_, err := collection.DeleteOne(db.ctx, bson.M{"uuid": uuid})
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
 // AddItemToShoppingList attempts to add an item to a shoppinglist of given
@@ -136,11 +139,30 @@ func (db DatabaseHandle) AddItemToShoppingList(uuid string, item model.Item) err
 		bson.M{"$push": bson.M{"items": item}},
 	)
 
-	if err != nil {
-		return err
+	return err
+}
+
+// CompleteItemFromShoppingList sets the completed flag of a specified item
+func (db DatabaseHandle) CompleteItemFromShoppingList(slUuid string, itemUuid uint32) error {
+	collection := db.client.
+		Database(databaseString).
+		Collection(shoppinglistCollectionString)
+
+	update := bson.M{
+		"$set": bson.M{
+			"items.$.completed": true, // Set completed to true (or false if you want to mark it as incomplete)
+		},
 	}
 
-	return nil
+	data, err := collection.UpdateOne(
+		db.ctx,
+		bson.M{"uuid": slUuid, "items.uuid": itemUuid},
+		update,
+	)
+
+	fmt.Println(data)
+
+	return err
 }
 
 // RemoveItemFromShoppingList attempts to delete an item to a shoppinglist of
@@ -159,9 +181,38 @@ func (db DatabaseHandle) RemoveItemFromShoppingList(slUuid string, itemUuid uint
 		bson.M{"$pull": bson.M{"items": bson.M{"uuid": itemUuid}}},
 	)
 
-	if err != nil {
-		return err
+	return err
+}
+
+func (db DatabaseHandle) GetItemByID(slId string, itemId uint32) (*model.Item, error) {
+
+	collection := db.client.
+		Database(databaseString).
+		Collection(shoppinglistCollectionString)
+
+	var sl model.ShoppingList
+
+	projection := bson.M{
+		"items": bson.M{
+			"$elemMatch": bson.M{
+				"uuid": itemId,
+			},
+		},
 	}
 
-	return nil
+	err := collection.FindOne(
+		db.ctx,
+		bson.M{"uuid": slId},
+		options.FindOne().SetProjection(projection),
+	).Decode(&sl)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"unable to retrieve a shopping list item with id <%d> from <%s>: %w",
+			itemId, slId, err,
+		)
+	}
+
+	item := sl.Items[0]
+
+	return &item, nil
 }

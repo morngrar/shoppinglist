@@ -3,14 +3,25 @@ package model
 import "github.com/google/uuid"
 
 type Item struct {
-	Id   uint32 `bson:"uuid"`
-	Name string `bson:"name"`
+	Id        uint32 `bson:"uuid"`
+	Name      string `bson:"name"`
+	Completed bool   `bson:"completed"`
 }
 
 func NewItem(name string) Item {
 	return Item{
-		Id:   uuid.New().ID(),
-		Name: name,
+		Id:        uuid.New().ID(),
+		Name:      name,
+		Completed: false,
+	}
+}
+
+func (i Item) TemplateMapping(slId string) ItemMapping {
+	return ItemMapping{
+		SLID:      slId,
+		Id:        i.Id,
+		Name:      i.Name,
+		Completed: i.Completed,
 	}
 }
 
@@ -26,15 +37,19 @@ func NewShoppingList() *ShoppingList {
 func (sl ShoppingList) TemplateMapping() TemplateMapping {
 	m := []ItemMapping{}
 	for _, e := range sl.Items {
-		m = append(m, ItemMapping{SLID: sl.Uuid, Id: e.Id, Name: e.Name})
+		m = append(
+			m,
+			e.TemplateMapping(sl.Uuid),
+		)
 	}
 	return TemplateMapping{Items: m, Uuid: sl.Uuid}
 }
 
 type ItemMapping struct {
-	SLID string
-	Id   uint32
-	Name string
+	SLID      string
+	Id        uint32
+	Name      string
+	Completed bool
 }
 
 type TemplateMapping struct {
@@ -43,5 +58,5 @@ type TemplateMapping struct {
 }
 
 func NewItemMapping(sl *ShoppingList, item Item) ItemMapping {
-	return ItemMapping{SLID: sl.Uuid, Id: item.Id, Name: item.Name}
+	return item.TemplateMapping(sl.Uuid)
 }
