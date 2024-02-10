@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/morngrar/shoppinglist/model"
@@ -48,6 +49,7 @@ func NewDatabaseHandle() (DatabaseHandle, error) {
 		password,
 		url,
 	)
+	log.Printf("Attempting to connect to mongo at %s", uri)
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
