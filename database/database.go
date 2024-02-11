@@ -43,7 +43,7 @@ func NewDatabaseHandle() (DatabaseHandle, error) {
 	}
 
 	uri := fmt.Sprintf(
-		"%s://%s:%s@%s:27017/?authMechanism=DEFAULT",
+		"%s://%s:%s@%s",
 		protocol,
 		user,
 		password,
