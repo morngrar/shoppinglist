@@ -2,6 +2,7 @@ package model
 
 import "github.com/google/uuid"
 
+// Item is the database model of a shopping list item
 type Item struct {
 	Id        uint32 `bson:"uuid"`
 	Name      string `bson:"name"`
@@ -25,6 +26,7 @@ func (i Item) TemplateMapping(slId string) ItemMapping {
 	}
 }
 
+// ShoppingList is the database model of a shoppingn list
 type ShoppingList struct {
 	Uuid  string `bson:"uuid"`
 	Items []Item `bson:"items"`
@@ -45,6 +47,8 @@ func (sl ShoppingList) TemplateMapping() TemplateMapping {
 	return TemplateMapping{Items: m, Uuid: sl.Uuid}
 }
 
+// ItemMapping is the mapping of a shopping list item to an object usable in
+// the template engine
 type ItemMapping struct {
 	SLID      string
 	Id        uint32
@@ -52,6 +56,8 @@ type ItemMapping struct {
 	Completed bool
 }
 
+// TemplateMapping is the mapping of a shopping list to an object usable in
+// the template engine
 type TemplateMapping struct {
 	Items []ItemMapping
 	Uuid  string
