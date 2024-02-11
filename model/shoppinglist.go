@@ -4,6 +4,7 @@ import "github.com/google/uuid"
 
 // Item is the database model of a shopping list item
 type Item struct {
+	Id        int64
 	Uuid      uint32
 	Name      string
 	Completed bool
@@ -28,6 +29,7 @@ func (i Item) TemplateMapping(slId string) ItemMapping {
 
 // ShoppingList is the database model of a shoppingn list
 type ShoppingList struct {
+	Id    int64
 	Uuid  string
 	Items []Item
 }

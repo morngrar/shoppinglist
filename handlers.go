@@ -24,7 +24,7 @@ func shoppingListGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := database.NewDatabaseHandle()
+	db, err := database.NewPostgresHandle()
 	if err != nil {
 		log.Printf("Failed to connect to database: %s", err)
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
@@ -59,7 +59,7 @@ func shoppingListAddHandler(w http.ResponseWriter, r *http.Request) {
 
 	shoppingListId := chi.URLParam(r, shoppingListIdString)
 
-	db, err := database.NewDatabaseHandle()
+	db, err := database.NewPostgresHandle()
 	if err != nil {
 		log.Printf("Failed to connect to database: %s", err)
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
@@ -108,7 +108,7 @@ func itemDoneHandler(w http.ResponseWriter, r *http.Request) {
 
 	shoppingListId := chi.URLParam(r, shoppingListIdString)
 
-	db, err := database.NewDatabaseHandle()
+	db, err := database.NewPostgresHandle()
 	if err != nil {
 		log.Printf("Failed to connect to database: %s", err)
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
@@ -167,7 +167,7 @@ func itemDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	shoppingListId := chi.URLParam(r, shoppingListIdString)
 
-	db, err := database.NewDatabaseHandle()
+	db, err := database.NewPostgresHandle()
 	if err != nil {
 		log.Printf("Failed to connect to database: %s", err)
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)

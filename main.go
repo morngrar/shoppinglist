@@ -19,7 +19,7 @@ func getId() int64 {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	db, err := database.NewDatabaseHandle()
+	db, err := database.NewPostgresHandle()
 	if err != nil {
 		log.Printf("Failed to connect to database: %s", err)
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)

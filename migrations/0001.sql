@@ -7,7 +7,7 @@ create table shoppinglists (
 
 create table items (
     id bigserial primary key,
-    uuid integer not null,
+    uuid bigint not null,
     shoppinglist_id bigint references shoppinglists on delete cascade,
     name text not null,
     completed boolean not null,
