@@ -1,20 +1,3 @@
 #!/usr/bin/bash
 
-# Sets up the database for the system for first-time use.
-#
-# If the container has already been created, it can be started and stopped with
-# `docker start dipt-mongo` and `docker stop dipt-mongo`
-
-source ./secrets.env
-
-root_username="$DB_USER"
-root_password="$DB_PASSWORD"
-#data_dir="$(pwd)"/db_data
-#mkdir -p "$data_dir"
-
-docker run --rm --name mongo-handleliste -p 27017:27017 -d \
-    -e "MONGO_INITDB_ROOT_USERNAME=$root_username" \
-    -e "MONGO_INITDB_ROOT_PASSWORD=$root_password"\
-    mongo \
-    --bind_ip_all
-    #-v "$data_dir":/data/db \
+sudo docker run --name postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:15.5
