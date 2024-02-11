@@ -4,14 +4,14 @@ import "github.com/google/uuid"
 
 // Item is the database model of a shopping list item
 type Item struct {
-	Id        uint32 `bson:"uuid"`
-	Name      string `bson:"name"`
-	Completed bool   `bson:"completed"`
+	Uuid      uint32
+	Name      string
+	Completed bool
 }
 
 func NewItem(name string) Item {
 	return Item{
-		Id:        uuid.New().ID(),
+		Uuid:      uuid.New().ID(),
 		Name:      name,
 		Completed: false,
 	}
@@ -20,7 +20,7 @@ func NewItem(name string) Item {
 func (i Item) TemplateMapping(slId string) ItemMapping {
 	return ItemMapping{
 		SLID:      slId,
-		Id:        i.Id,
+		Id:        i.Uuid,
 		Name:      i.Name,
 		Completed: i.Completed,
 	}
@@ -28,8 +28,8 @@ func (i Item) TemplateMapping(slId string) ItemMapping {
 
 // ShoppingList is the database model of a shoppingn list
 type ShoppingList struct {
-	Uuid  string `bson:"uuid"`
-	Items []Item `bson:"items"`
+	Uuid  string
+	Items []Item
 }
 
 func NewShoppingList() *ShoppingList {
