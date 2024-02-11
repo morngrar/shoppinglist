@@ -6,7 +6,7 @@
     {{ .Name }}
 
     <form 
-        hx-get="/{{ .SLID }}/complete-item/{{ .Id }}"
+        hx-get="/shoppinglist/{{ .SLID }}/complete-item/{{ .Id }}"
         hx-target="#item-{{- .Id}}"
         hx-swap="outerHTML"
         id="complete-item-form"

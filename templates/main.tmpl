@@ -58,7 +58,7 @@
             <h3 class="mb-4">Add item</h3>
 
             <form 
-                hx-post="/{{ .Uuid }}/add-item/" 
+                hx-post="/shoppinglist/{{ .Uuid }}/add-item/" 
                 hx-target="#item-list" 
                 hx-swap="beforeend" 
                 hx-on::after-request="this.reset()"
@@ -107,7 +107,7 @@
                 class="btn btn-danger mt-4 mb-4" 
                 id="new-list-button"
                 type="button"
-                onclick="window.location.replace('/')"
+                onclick="window.location.replace('/shoppinglist')"
                 >
                 New list
             </button>

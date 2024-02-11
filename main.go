@@ -35,7 +35,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newPage := fmt.Sprintf("/%s", sl.Uuid)
+	newPage := fmt.Sprintf("/shoppinglist/%s", sl.Uuid)
 	w.Header().Add("Location", newPage)
 	w.WriteHeader(http.StatusFound)
 }
@@ -46,11 +46,11 @@ func main() {
 	r.Use(middleware.Logger)
 
 	// define handlers
-	r.Get("/", indexHandler)
-	r.Get("/{shoppingListId}", shoppingListGetHandler)
-	r.Post("/{shoppingListId}/add-item/", shoppingListAddHandler)
-	r.Get("/{shoppingListId}/complete-item/{id}", itemDoneHandler)
-	r.Delete("/{shoppingListId}/complete-item/{id}", itemDeleteHandler)
+	r.Get("/shoppinglist/", indexHandler)
+	r.Get("/shoppinglist/{shoppingListId}", shoppingListGetHandler)
+	r.Post("/shoppinglist/{shoppingListId}/add-item/", shoppingListAddHandler)
+	r.Get("/shoppinglist/{shoppingListId}/complete-item/{id}", itemDoneHandler)
+	r.Delete("/shoppinglist/{shoppingListId}/complete-item/{id}", itemDeleteHandler)
 
 	port := "8080"
 	fmt.Println("Running on port: ", port)

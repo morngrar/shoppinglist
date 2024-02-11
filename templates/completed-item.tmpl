@@ -6,7 +6,7 @@
     {{ .Name }}
 
     <form 
-        hx-delete="/{{ .SLID }}/complete-item/{{ .Id }}"
+        hx-delete="/shoppinglist/{{ .SLID }}/complete-item/{{ .Id }}"
         hx-target="#item-{{- .Id}}"
         hx-swap="delete"
         id="complete-item-form"
