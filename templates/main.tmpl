@@ -35,12 +35,12 @@
     <div class="row mt-4 g-4">
         <div>
             <h1 class="mb-4">Shopping list</h1>
-        
+
             {{ block "item-list" .}}
                 <ul class="list-group list-group-flush fs-5 me-5" id="item-list">
-        
+
                     {{ range .Items }}
-                        
+
                         {{ block "item-list-element" . }}
                             {{if .Completed }}
                                 {{template "completed-item" . }}

@@ -10,14 +10,15 @@
         hx-target="#item-{{- .Id}}"
         hx-swap="outerHTML"
         id="complete-item-form"
+        class="d-flex align-items-center justify-content-space-around"
     >
-    <span 
-        class="spinner-border spinner-border-sm htmx-indicator" 
-        id="complete-spinner" 
-        role="status" 
+        <span 
+            class="spinner-border spinner-border-sm htmx-indicator" 
+            id="complete-spinner" 
+            role="status" 
 
-        aria-hidden="true">
-    </span>
+            aria-hidden="true">
+        </span>
         <button 
             type="submit" 
             class="btn btn-secondary" 
